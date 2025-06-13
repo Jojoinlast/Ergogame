@@ -1,1 +1,156 @@
-Play here
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fix That Posture!</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #fceabb, #f8b500);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .workspace {
+      margin: 20px auto;
+      width: 500px; 
+      height: 200px; 
+      border: 3px dashed #ccc;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .accessories {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .item {
+      width: 100px;
+      height: 100px;
+      border: 2px solid #999;
+      border-radius: 10px;
+      background-color: #ddd;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      cursor: grab;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .message {
+      font-size: 1.2em;
+      color: green;
+      margin-top: 20px;
+    }
+
+    .next-btn {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🧩 Fix That Posture – Level <span id="levelNum">1</span></h1>
+  <p>Drag the missing item to fix the workstation!</p>
+
+  <div class="workspace" id="workspace"></div>
+
+  <div class="accessories">
+    <div class="item" id="laptopRaiser" draggable="true" title="Laptop Raiser"
+         style="background-image: url('laptop_raiser.png');"></div>
+    <div class="item" id="keyboardMouse" draggable="true" title="Keyboard & Mouse"
+         style="background-image: url('Keyboard & Mouse.png');"></div>
+    <div class="item" id="footrest" draggable="true" title="Footrest"
+         style="background-image: url('footrest.png');"></div>
+  </div>
+
+  <div class="message" id="message">Match the correct image</div>
+  <button class="next-btn" id="nextBtn">Next →</button>
+
+  <script>
+    const workspace = document.getElementById('workspace');
+    const message = document.getElementById('message');
+    const nextBtn = document.getElementById('nextBtn');
+    const levelNum = document.getElementById('levelNum');
+
+    const levels = [
+      {
+        bg: 'bad1_no_laptop_raiser.jpeg',
+        fixId: 'laptopRaiser'
+      },
+      {
+        bg: 'bad2_no_keyboard_mouse.jpg',
+        fixId: 'keyboardMouse'
+      },
+      {
+        bg: 'bad3_no_footrest.jpg',
+        fixId: 'footrest'
+      }
+    ];
+
+    let currentLevel = 0;
+
+    function loadLevel() {
+      const level = levels[currentLevel];
+      workspace.style.backgroundImage = `url('${level.bg}')`;
+      message.style.display = 'none';
+      nextBtn.style.display = 'none';
+      levelNum.textContent = currentLevel + 1;
+
+      document.querySelectorAll('.item').forEach(item => {
+        item.style.display = 'block';
+      });
+    }
+
+    loadLevel();
+
+    document.querySelectorAll('.item').forEach(item => {
+      item.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', e.target.id);
+      });
+    });
+
+    workspace.addEventListener('dragover', e => e.preventDefault());
+
+    workspace.addEventListener('drop', e => {
+      e.preventDefault();
+      const droppedId = e.dataTransfer.getData('text/plain');
+      const correctId = levels[currentLevel].fixId;
+
+      if (droppedId === correctId) {
+        document.getElementById(droppedId).style.display = 'none';
+        message.style.display = 'block';
+        nextBtn.style.display = 'inline-block';
+      }
+    });
+
+   nextBtn.addEventListener('click', () => {
+      currentLevel++;
+      if (currentLevel < levels.length) {
+        loadLevel();
+      } else {
+        workspace.style.backgroundImage = "url('corrected_posture.jpeg')";
+        message.innerHTML = `
+          🎉 All Postures Fixed! Well Done!<br><br>
+          👉 <a href="https://forms.office.com/r/rMMP4GK5KH" target="_blank">
+            Join our upcoming wonderful session here!
+          </a>
+        `;
+        nextBtn.style.display = 'none';
+        document.querySelectorAll('.item').forEach(item => item.style.display = 'none');
+      }
+    });
+  </script>
+</body>
+</html>
