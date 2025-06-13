@@ -1,2 +1,1 @@
-# Ergogame
-index.html
+ErgoGame
